@@ -6,7 +6,12 @@ dotenv.config()
 const app = express()
 const port = 3000
 
+const bodyParser = require('body-parser')
 const userRoutes = require('./routes/user-routes')
+
+app.use(bodyParser.json())
+app.use(cors())
+
 
 app.get('/hello', (req, res) => {
     console.log('hello')

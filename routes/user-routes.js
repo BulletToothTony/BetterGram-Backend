@@ -4,8 +4,8 @@ const usersControllers = require('../controllers/users-controllers')
 
 const router = express.Router()
 
-router.post('/signup', usersControllers.postSingleUser)
-
+router.post('/signup', usersControllers.signup)
+router.post('/login', usersControllers.login)
 
 
 

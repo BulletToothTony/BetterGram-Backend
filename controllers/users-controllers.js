@@ -1,80 +1,134 @@
-const User = require("../models/user")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const postSingleUser = async (req, res, next) => {
-    const createdUser = new User({
-        email: "h@x.com",
-        username: "henrywl",
-        password: "123456789",
-        followers: [],
-        following: []
-    })
+  const createdUser = new User({
+    email: "h@x.com",
+    username: "henrywl",
+    password: "123456789",
+    followers: [],
+    following: [],
+  });
 
-    try {
-        await createdUser.save()
-    } catch(err) {
-        console.log(err)
-    }
+  try {
+    await createdUser.save();
+  } catch (err) {
+    console.log(err);
+  }
 
-
-    res.status(201).json({createdUser})
-}
+  res.status(201).json({ createdUser });
+};
 
 const signup = async (req, res, next) => {
-    const { email, username, password } = req.body;
+  console.log("in signup");
+  console.log(req.body);
+  const { email, username, password } = req.body;
+
+  console.log(email, username, password);
+
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+    console.log(existingUser, "existing user");
+  } catch (err) {
+    console.log(err, "error signing up");
+  }
+
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
+
+  const saltRounds = 12;
+  let hashedPass;
+  try {
+    hashedPass = await bcrypt.hash(password, saltRounds);
+  } catch (err) {
+    console.log(err, "error hashing pass");
+  }
+
+  const createdUser = new User({
+    email,
+    username,
+    password: hashedPass,
+    followers: [],
+    following: [],
+  });
+
+  try {
+    await createdUser.save();
+  } catch (err) {
+    console.log(err);
+  }
+
+//   generate token
+  let token;
+  try {
+    token = jwt.sign(
+      {
+        userId: createdUser._id,
+        username: createdUser.username,
+        email: createdUser.email,
+      },
+      process.env.JWT_KEY
+    );
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.status(201).json({ createdUser, token });
+};
+
+// login
+const login = async (req, res, next) => {
+    const { email, password } = req.body;
   
     let existingUser;
     try {
       existingUser = await User.findOne({ email: email });
       console.log(existingUser, "existing user");
     } catch (err) {
-      console.log(err, "error signing up");
+      console.log(err);
     }
   
-    if (existingUser) {
-      throw new Error("User already exists");
+    if (!existingUser) {
+      console.log("user not found, please register");
     }
   
-    const saltRounds = 12;
-    let hashedPass;
+    let isValidPassword = false;
     try {
-      hashedPass = await bcrypt.hash(password, saltRounds);
+      isValidPassword = await bcrypt.compare(password, existingUser.password);
     } catch (err) {
-      console.log(err, "error hashing pass");
+      console.log(err);
+    }
+    console.log(isValidPassword, "< correctPass");
+  
+    if (!isValidPassword) {
+      throw new Error("Invalid Password");
     }
   
-    const createdUser = new User({
-      email,
-      username,
-      password: hashedPass,
-      followers: [],
-      following: []
-    });
-  
+    let token;
     try {
-      await createdUser.save();
+      token = jwt.sign(
+        {
+          userId: existingUser._id,
+          username: existingUser.username,
+          email: existingUser.email,
+        },
+        process.env.JWT_KEY
+      );
     } catch (err) {
       console.log(err);
     }
   
-    //generate token
-    // let token;
-    // try {
-    //   token = jwt.sign(
-    //     {
-    //       userId: createdUser._id,
-    //       username: createdUser.username,
-    //       email: createdUser.email,
-    //     },
-    //     process.env.JWT_KEY
-    //   );
-    // } catch (err) {
-    //   console.log(err);
-    // }
-  
-    res.status(201).json({ createdUser });
+    res.json({
+      email: existingUser.email,
+      username: existingUser.username,
+      _id: existingUser._id,
+      token,
+    });
   };
 
-
 exports.postSingleUser = postSingleUser;
+exports.signup = signup;
+exports.login = login;
