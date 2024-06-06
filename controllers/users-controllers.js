@@ -20,6 +20,19 @@ const postSingleUser = async (req, res, next) => {
   res.status(201).json({ createdUser });
 };
 
+const getAllUsers = async (req, res, next) => {
+    let allUsers
+    try {
+
+        allUsers = await User.find({})
+    } catch(err) {
+        console.log(err)
+    }
+
+    res.status(200).json({allUsers})
+
+}
+
 const signup = async (req, res, next) => {
   console.log("in signup");
   console.log(req.body);
@@ -130,5 +143,6 @@ const login = async (req, res, next) => {
   };
 
 exports.postSingleUser = postSingleUser;
+exports.getAllUsers = getAllUsers;
 exports.signup = signup;
 exports.login = login;
