@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Post = require("../models/post");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -30,6 +31,148 @@ const getAllUsers = async (req, res, next) => {
     }
 
     res.status(200).json({allUsers})
+
+}
+
+const postFollowUser = async (req, res, next) => {
+    console.log('running follow')
+    
+    const {uid} = req.params
+    const {loggedInUser} = req.body
+
+    console.log(req.params)
+    console.log(loggedInUser, 'loggedInUser')
+
+
+
+    console.log(req.body, 'req body')
+
+
+    // update user to be followed
+    try {
+        let doc = await User.findOneAndUpdate(
+            {_id: uid},
+            {$push: {followers: {_id: loggedInUser}}},
+            {new: true}
+        )
+
+        res.status(200).json({doc})
+    } catch(err) {
+        console.log(err)
+    }
+
+    // updated logged in user following
+    try {
+        let doc = await User.findOneAndUpdate(
+            {_id: loggedInUser},
+            {$push: {following: {_id: uid}}},
+            {new: true}
+        )
+
+        res.status(200).json({doc})
+    } catch(err) {
+        console.log(err)
+    }
+
+    // let doc = await User.findOneAndUpdate({_id: uid}, {followers: [loggedInUser]}, {new: true})
+
+    // res.status(200).json({doc})
+    // let userToBeFollowed;
+    // try {
+    //     userToBeFollowed = await User.find({_id: uid})
+    //     userToBeFollowed.following.push(loggedInUser)
+    //     userToBeFollowed.save()
+    // } catch(err) {
+    //     console.log(err)
+    // }
+
+    // console.log(userToBeFollowed)
+
+    // res.status(200).json({text:'running'})
+}
+
+const postStatus = async (req, res, next) => {
+    console.log('in post status')
+    const {uid} = req.params
+    const {text} = req.body
+    console.log(uid, text)
+
+    // update post of logged in user
+    try {
+        // let doc = await User.findOneAndUpdate(
+        //     {_id: uid},
+        //     {$push: {posts: {status: text}}},
+        //     {new: true}
+        // )
+
+        const newPost = new Post({
+            userID: uid,
+            status: text,
+            likes: [],
+            comments: []
+        })
+
+        await newPost.save()
+
+
+
+        res.status(201).json({message: 'Post created successfully!', post: newPost})
+    } catch(err) {
+        console.log(err)
+    }
+
+
+    // res.status(200).json({text: 'success'})
+}
+
+const getFollowingPosts = async(req, res, next) => {
+    console.log('first')
+
+    const {userId} = req.params
+
+    console.log(userId, 'useriddddd')
+
+    try {
+        // Find the current user and populate the following list
+        const user = await User.findById({_id: userId}).populate('following.userID');
+
+        console.log(user, 'user')
+        
+        // Extract following user IDs
+        const followingUserIds = user.following.map(f => f._id);
+
+        console.log(followingUserIds, 'following ids')
+        
+        // Find posts from the users the current user is following
+        const posts = await Post.find({ userID: { $in: followingUserIds } })
+                                .populate('userID', 'username') // Optionally populate user info
+                                .sort({ createdAt: -1 }); // Sort by creation date, newest first
+    
+
+        console.log(posts)
+
+        res.status(200).json({ posts });
+      } catch (err) {
+        res.status(500).json({ message: 'Fetching posts failed, please try again later.' });
+      }
+
+
+
+
+    // try {
+    //     let doc = await User.find({_id: uid})
+
+    //     res.status(200).json({userFollowing: doc[0].following})
+    // } catch(err) {
+    //     console.log(err)
+    // }
+    // get user id of logged in user
+    // get following IDs
+    // populate with posts
+    // get posts from following IDs
+}
+
+const getSingleUserFeed = () => {
 
 }
 
@@ -146,3 +289,6 @@ exports.postSingleUser = postSingleUser;
 exports.getAllUsers = getAllUsers;
 exports.signup = signup;
 exports.login = login;
+exports.postFollowUser = postFollowUser;
+exports.postStatus = postStatus;
+exports.getFollowingPosts = getFollowingPosts;

@@ -11,6 +11,7 @@ const userSchema = new Schema({
   following: [{ userID: { type: mongoose.Types.ObjectId } }],
   // liked photos?
   // images?
+  posts: [ {status: {type: String}, likes: [{userID: { type: mongoose.Types.ObjectId }}], comments: [{userID: { type: mongoose.Types.ObjectId }}, {text: {type: String}}]}]
 });
 
 userSchema.plugin(uniqueValidator);
