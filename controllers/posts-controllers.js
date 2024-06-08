@@ -41,6 +41,8 @@ const postComment = async (req, res, next) => {
             { new: true }
           ).populate('userID', 'username');
           console.log(updatedPost);
+
+          res.status(201).json({updatedPost})
     } catch(err) {
         console.log(err)
     }

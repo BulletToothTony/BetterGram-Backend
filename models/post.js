@@ -9,7 +9,8 @@ const postSchema = new Schema({
   comments: [
     {
       userID: { type: mongoose.Types.ObjectId, ref: 'User' },
-      text: { type: String, required: true }
+      text: { type: String, required: true },
+      time: {type: Date, default: Date.now}
     }
   ],
 }, { timestamps: true });

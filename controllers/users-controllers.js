@@ -2,6 +2,7 @@ const User = require("../models/user");
 const Post = require("../models/post");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose")
 
 const postSingleUser = async (req, res, next) => {
   const createdUser = new User({
@@ -141,7 +142,13 @@ const getFollowingPosts = async(req, res, next) => {
         // Extract following user IDs
         const followingUserIds = user.following.map(f => f._id);
 
-        console.log(followingUserIds, 'following ids')
+        // include current user's ID to show their posts in feed
+        // followingUserIds.push(mongoose.Types.ObjectId('12344'))
+        // const newUserID = mongoose.Types.ObjectId(userId)
+        // console.log(newUserID)
+
+        followingUserIds.push(userId)
+        console.log(followingUserIds, '<<<<<<<<<<<< following ids')
         
         // Find posts from the users the current user is following
         const posts = await Post.find({ userID: { $in: followingUserIds } })
