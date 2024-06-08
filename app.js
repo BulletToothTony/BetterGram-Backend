@@ -1,31 +1,32 @@
-const express = require('express')
-const cors = require('cors')
-const mongoose = require("mongoose")
-const dotenv = require("dotenv")
-dotenv.config()
-const app = express()
-const port = 3000
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
+const app = express();
+const port = 3000;
 
-const bodyParser = require('body-parser')
-const userRoutes = require('./routes/user-routes')
+const bodyParser = require("body-parser");
+const userRoutes = require("./routes/user-routes");
+const postRoutes = require("./routes/post-routes");
 
-app.use(bodyParser.json())
-app.use(cors())
+app.use(bodyParser.json());
+app.use(cors());
 
+app.get("/hello", (req, res) => {
+  console.log("hello");
+  res.json("hello world");
+});
 
-app.get('/hello', (req, res) => {
-    console.log('hello')
-    res.json('hello world')
-})
-
-app.use('/api/users', userRoutes)
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 // app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`)
 // })
 
 mongoose.connect(`${process.env.DB_URI}`).then(() => {
-    app.listen(3000, () => {
-        console.log('Example app listening on 3000')
-    })
-})
+  app.listen(3000, () => {
+    console.log("Example app listening on 3000");
+  });
+});
