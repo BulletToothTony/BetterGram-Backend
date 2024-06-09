@@ -179,9 +179,61 @@ const getFollowingPosts = async(req, res, next) => {
     // get posts from following IDs
 }
 
-const getSingleUserFeed = () => {
+const getSingleUserFeed = async (req, res, next) => {
+    // get single feed for user when on their profile
+    console.log('single user feed')
+    const {uid} = req.params
 
+    console.log(uid, 'useriddddd')
+
+    try {
+        // Find the current user and populate the following list
+        const user = await User.findById({_id: uid}).populate('following.userID');
+
+        console.log(user, 'user')
+        
+        // get post from user from their own ID
+        const followingUserIds = [uid]
+
+        // include current user's ID to show their posts in feed
+        // followingUserIds.push(mongoose.Types.ObjectId('12344'))
+        // const newUserID = mongoose.Types.ObjectId(userId)
+        // console.log(newUserID)
+
+        // followingUserIds.push(userId)
+        console.log(followingUserIds, '<<<<<<<<<<<< following ids')
+        
+        // Find posts from the users the current user is following
+        const posts = await Post.find({ userID: { $in: followingUserIds } })
+                                .populate('userID', 'username') // Optionally populate user info
+                                .sort({ createdAt: -1 }); // Sort by creation date, newest first
+    
+
+        console.log(posts)
+
+        res.status(200).json({ posts });
+      } catch (err) {
+        res.status(500).json({ message: 'Fetching posts failed, please try again later.' });
+      }
 }
+
+
+// user profile
+
+const getUserProfile = async(req, res, next) => {
+    console.log('user profile')
+
+    const {uid} = req.params;
+
+    try {
+        const foundUser = await User.findOne({ _id: uid });
+        res.status(200).json({foundUser})
+
+    } catch(err) {
+
+    }
+}
+
 
 const signup = async (req, res, next) => {
   console.log("in signup");
@@ -299,3 +351,5 @@ exports.login = login;
 exports.postFollowUser = postFollowUser;
 exports.postStatus = postStatus;
 exports.getFollowingPosts = getFollowingPosts;
+exports.getUserProfile = getUserProfile;
+exports.getSingleUserFeed = getSingleUserFeed;

@@ -9,6 +9,9 @@ router.get('/allusers', usersControllers.getAllUsers)
 router.post('/follow/:uid', usersControllers.postFollowUser)
 router.post('/post/:uid', usersControllers.postStatus)
 
+router.get('/user/:uid', usersControllers.getUserProfile)
+router.get('/singleUserFeed/:uid', usersControllers.getSingleUserFeed)
+
 router.post('/signup', usersControllers.signup)
 router.post('/login', usersControllers.login)
 
