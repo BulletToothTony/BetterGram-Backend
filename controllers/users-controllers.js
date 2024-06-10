@@ -211,6 +211,11 @@ const getSingleUserFeed = async (req, res, next) => {
         // Find posts from the users the current user is following
         const posts = await Post.find({ userID: { $in: followingUserIds } })
                                 .populate('userID', 'username') // Optionally populate user info
+                                .populate({
+                                    path: 'comments._id',
+                                    model: 'User',
+                                    select: 'username' // Populate username in comments
+                                  }) // Populate user info for comments
                                 .sort({ createdAt: -1 }); // Sort by creation date, newest first
     
 
