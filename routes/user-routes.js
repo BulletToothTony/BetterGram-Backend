@@ -12,6 +12,8 @@ router.post('/post/:uid', usersControllers.postStatus)
 router.get('/user/:uid', usersControllers.getUserProfile)
 router.get('/singleUserFeed/:uid', usersControllers.getSingleUserFeed)
 
+router.patch('/user/updateUserProfile/:uid', usersControllers.postUserProfileUpdate)
+
 router.post('/signup', usersControllers.signup)
 router.post('/login', usersControllers.login)
 

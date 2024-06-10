@@ -153,6 +153,11 @@ const getFollowingPosts = async(req, res, next) => {
         // Find posts from the users the current user is following
         const posts = await Post.find({ userID: { $in: followingUserIds } })
                                 .populate('userID', 'username') // Optionally populate user info
+                                .populate({
+                                    path: 'comments._id',
+                                    model: 'User',
+                                    select: 'username' // Populate username in comments
+                                  }) // Populate user info for comments
                                 .sort({ createdAt: -1 }); // Sort by creation date, newest first
     
 
@@ -232,6 +237,54 @@ const getUserProfile = async(req, res, next) => {
     } catch(err) {
 
     }
+}
+
+const postUserProfileUpdate = async (req, res, next) => {
+    console.log('in user profile update controller')
+    const {uid} = req.params
+
+    console.log(uid)
+
+    const { username, email, password } = req.body;
+  console.log(uid);
+  console.log(req.body);
+
+  const updateFields = {};
+  if (username !== '') updateFields.username = username;
+  if (email !== '') updateFields.email = email;
+  if (password !== '') {
+  try {
+    const hashedPass = await bcrypt.hash(password, 12);
+    updateFields.password = hashedPass
+  } catch (err) {
+    console.log(err, "error hashing pass");
+  }
+
+  }
+
+  let updatedUser
+  try {
+    if (Object.keys(updateFields).length > 0) {
+      updatedUser = await User.findByIdAndUpdate(uid, updateFields, {new: true});
+    } else {
+      return res.status(400).json({ message: 'No valid fields to update' });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Updating user failed, please try again' });
+
+  }
+
+  console.log(updatedUser, 'updateduser');
+
+  return res.json({ updatedUser });
+  // const user = usersList.filter((user) => user.id === uid);
+
+  // if (user.length !== 0) {
+  //   user[0].name = name;
+  // } else {
+  //   return res.status(404).json({ error: "ID not found!" });
+  // }
 }
 
 
@@ -353,3 +406,4 @@ exports.postStatus = postStatus;
 exports.getFollowingPosts = getFollowingPosts;
 exports.getUserProfile = getUserProfile;
 exports.getSingleUserFeed = getSingleUserFeed;
+exports.postUserProfileUpdate = postUserProfileUpdate;
