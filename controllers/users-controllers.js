@@ -92,6 +92,63 @@ const postFollowUser = async (req, res, next) => {
     // res.status(200).json({text:'running'})
 }
 
+const postUnfollowUser = async (req, res, next) => {
+    console.log('running unfollow')
+    
+    const {uid} = req.params
+    const {loggedInUser} = req.body
+
+    console.log(req.params)
+    console.log(loggedInUser, 'loggedInUser')
+
+
+
+    console.log(req.body, 'req body')
+
+
+    // update user to be unfollowed
+    try {
+        let doc = await User.findOneAndUpdate(
+            {_id: uid},
+            {$pull: {followers: {_id: loggedInUser}}},
+            {new: true}
+        )
+
+        res.status(200).json({doc})
+    } catch(err) {
+        console.log(err)
+    }
+
+    // updated logged in user following
+    try {
+        let doc = await User.findOneAndUpdate(
+            {_id: loggedInUser},
+            {$pull: {following: {_id: uid}}},
+            {new: true}
+        )
+
+        res.status(200).json({doc})
+    } catch(err) {
+        console.log(err)
+    }
+
+    // let doc = await User.findOneAndUpdate({_id: uid}, {followers: [loggedInUser]}, {new: true})
+
+    // res.status(200).json({doc})
+    // let userToBeFollowed;
+    // try {
+    //     userToBeFollowed = await User.find({_id: uid})
+    //     userToBeFollowed.following.push(loggedInUser)
+    //     userToBeFollowed.save()
+    // } catch(err) {
+    //     console.log(err)
+    // }
+
+    // console.log(userToBeFollowed)
+
+    // res.status(200).json({text:'running'})
+}
+
 const postStatus = async (req, res, next) => {
     console.log('in post status')
     const {uid} = req.params
@@ -407,6 +464,7 @@ exports.getAllUsers = getAllUsers;
 exports.signup = signup;
 exports.login = login;
 exports.postFollowUser = postFollowUser;
+exports.postUnfollowUser = postUnfollowUser;
 exports.postStatus = postStatus;
 exports.getFollowingPosts = getFollowingPosts;
 exports.getUserProfile = getUserProfile;
