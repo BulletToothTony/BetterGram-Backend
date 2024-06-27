@@ -13,6 +13,8 @@ const postSchema = new Schema({
       time: {type: Date, default: Date.now}
     }
   ],
+  imageURL: { type: String }
+//   imageURL: { type: String, required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Post", postSchema);

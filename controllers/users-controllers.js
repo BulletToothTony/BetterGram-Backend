@@ -3,6 +3,8 @@ const Post = require("../models/post");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose")
+const cloudinary = require("../utils/cloudinary");
+
 
 const postSingleUser = async (req, res, next) => {
   const createdUser = new User({
@@ -209,7 +211,7 @@ const getFollowingPosts = async(req, res, next) => {
         
         // Find posts from the users the current user is following
         const posts = await Post.find({ userID: { $in: followingUserIds } })
-                                .populate('userID', 'username') // Optionally populate user info
+                                .populate('userID', 'username avatarURL') // Optionally populate user info
                                 .populate({
                                     path: 'comments._id',
                                     model: 'User',
@@ -267,7 +269,8 @@ const getSingleUserFeed = async (req, res, next) => {
         
         // Find posts from the users the current user is following
         const posts = await Post.find({ userID: { $in: followingUserIds } })
-                                .populate('userID', 'username') // Optionally populate user info
+                                .populate('userID', 'username avatarURL') // Optionally populate user info
+                                // .populate('user', 'avatarURL')
                                 .populate({
                                     path: 'comments._id',
                                     model: 'User',
@@ -311,9 +314,23 @@ const postUserProfileUpdate = async (req, res, next) => {
   console.log(uid);
   console.log(req.body);
 
+  const uploadResult = await cloudinary.uploader
+    .upload(req.file.path, {
+      public_id: "imagepload",
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+
+
+  console.log(uploadResult, "uploaded result");
+
   const updateFields = {};
   if (username !== '') updateFields.username = username;
   if (email !== '') updateFields.email = email;
+  if (req.file.path !== '') updateFields.avatarURL = uploadResult.secure_url
+//   if (avatarURL !== '') updateFields.avatarURL = avatarURL
   if (password !== '') {
   try {
     const hashedPass = await bcrypt.hash(password, 12);
@@ -357,6 +374,18 @@ const signup = async (req, res, next) => {
 
   console.log(email, username, password);
 
+  const uploadResult = await cloudinary.uploader
+  .upload(req.file.path, {
+    public_id: `imagepload`,
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+
+
+console.log(uploadResult, "uploaded result");
+
   let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
@@ -383,6 +412,7 @@ const signup = async (req, res, next) => {
     password: hashedPass,
     followers: [],
     following: [],
+    avatarURL: uploadResult.secure_url
   });
 
   try {
@@ -465,7 +495,7 @@ exports.signup = signup;
 exports.login = login;
 exports.postFollowUser = postFollowUser;
 exports.postUnfollowUser = postUnfollowUser;
-exports.postStatus = postStatus;
+// exports.postStatus = postStatus;
 exports.getFollowingPosts = getFollowingPosts;
 exports.getUserProfile = getUserProfile;
 exports.getSingleUserFeed = getSingleUserFeed;
