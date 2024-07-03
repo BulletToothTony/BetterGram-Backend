@@ -297,7 +297,14 @@ const getUserProfile = async(req, res, next) => {
 
     try {
         const foundUser = await User.findOne({ _id: uid });
-        res.status(200).json({foundUser})
+
+        if (!foundUser) {
+            return res.status(404).json({message: "User not found"})
+        }
+
+        const postCount = await Post.countDocuments({userID: uid})
+
+        res.status(200).json({foundUser, postCount})
 
     } catch(err) {
 
@@ -473,7 +480,7 @@ const login = async (req, res, next) => {
         {
           userId: existingUser._id,
           username: existingUser.username,
-          email: existingUser.email,
+          email: existingUser.email
         },
         process.env.JWT_KEY
       );
@@ -485,6 +492,7 @@ const login = async (req, res, next) => {
       email: existingUser.email,
       username: existingUser.username,
       _id: existingUser._id,
+      userAvatarURL: existingUser.avatarURL,
       token,
     });
   };

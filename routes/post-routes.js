@@ -17,6 +17,8 @@ router.post('/post/:uid', upload.single('image'), postsControllers.postStatus) /
 
 router.get("/singlePost/:postID", postsControllers.getSinglePost)
 
+router.delete("/singlePost/:postID", postsControllers.deletePost)
+
 // router.post('/upload', upload.single('image'), postsControllers.testImageUpload)
 router.post('/upload', upload.single('image'), function (req, res) {
     cloudinary.uploader.upload(req.file.path, function (err, result){

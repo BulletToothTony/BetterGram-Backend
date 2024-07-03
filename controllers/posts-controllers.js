@@ -20,7 +20,7 @@ const postLikePost = async (req, res, next) => {
       .populate({
         path: "comments._id",
         model: "User",
-        select: "username", // Populate username in comments
+        select: "username avatarURL", // Populate username in comments
       });
     console.log(updatedPost);
 
@@ -50,7 +50,7 @@ const postUnlikePost = async (req, res, next) => {
       .populate({
         path: "comments._id",
         model: "User",
-        select: "username", // Populate username in comments
+        select: "username avatarURL", // Populate username in comments
       });
     console.log(updatedPost);
 
@@ -157,8 +157,26 @@ const postStatus = async (req, res, next) => {
   // res.status(200).json({text: 'success'})
 };
 
+const deletePost = async (req, res, next) => {
+  console.log('eeeeeejjjjj')
+
+  const {postID} = req.params
+
+  console.log(postID)
+
+  try {
+    const result = await Post.findByIdAndDelete(postID)
+    console.log(result)
+    res.status(204).json(result)
+  } catch (err) {
+    console.log(err)
+  }
+
+}
+
 exports.postLikePost = postLikePost;
 exports.postComment = postComment;
 exports.postUnlikePost = postUnlikePost;
 exports.getSinglePost = getSinglePost;
 exports.postStatus = postStatus;
+exports.deletePost = deletePost;
