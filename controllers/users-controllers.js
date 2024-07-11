@@ -319,9 +319,12 @@ const postUserProfileUpdate = async (req, res, next) => {
 
     const { username, email, password } = req.body;
   console.log(uid);
-  console.log(req.body);
+  console.log(req.body, '< req body');
 
-  const uploadResult = await cloudinary.uploader
+
+  let uploadResult;
+if (req.body.image !== 'undefined') {
+  uploadResult = await cloudinary.uploader
     .upload(req.file.path, {
       public_id: "imagepload",
     })
@@ -329,6 +332,9 @@ const postUserProfileUpdate = async (req, res, next) => {
       console.log(error);
     });
 
+}
+
+console.log(req.file, 'req.file')
 
 
   console.log(uploadResult, "uploaded result");
@@ -336,7 +342,7 @@ const postUserProfileUpdate = async (req, res, next) => {
   const updateFields = {};
   if (username !== '') updateFields.username = username;
   if (email !== '') updateFields.email = email;
-  if (req.file.path !== '') updateFields.avatarURL = uploadResult.secure_url
+  if (req.file !== undefined) updateFields.avatarURL = uploadResult.secure_url
 //   if (avatarURL !== '') updateFields.avatarURL = avatarURL
   if (password !== '') {
   try {
