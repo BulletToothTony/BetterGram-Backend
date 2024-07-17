@@ -317,7 +317,7 @@ const postUserProfileUpdate = async (req, res, next) => {
 
     console.log(uid)
 
-    const { username, email, password } = req.body;
+    const { username, email, password, bio } = req.body;
   console.log(uid);
   console.log(req.body, '< req body');
 
@@ -342,6 +342,7 @@ console.log(req.file, 'req.file')
   const updateFields = {};
   if (username !== '') updateFields.username = username;
   if (email !== '') updateFields.email = email;
+  if (bio !== '') updateFields.bio = bio;
   if (req.file !== undefined) updateFields.avatarURL = uploadResult.secure_url
 //   if (avatarURL !== '') updateFields.avatarURL = avatarURL
   if (password !== '') {
@@ -422,6 +423,7 @@ console.log(uploadResult, "uploaded result");
   const createdUser = new User({
     email,
     username,
+    bio: "",
     password: hashedPass,
     followers: [],
     following: [],

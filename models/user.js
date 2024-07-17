@@ -10,7 +10,7 @@ const userSchema = new Schema({
   followers: [{ userID: { type: mongoose.Types.ObjectId, ref: 'User' } }], //add required true to all below later if needed
   following: [{ userID: { type: mongoose.Types.ObjectId, ref: 'User' } }],
   avatarURL: {type: String},
-  Bio: {type: String},
+  bio: {type: String},
   // add bio
   // liked photos?
   // images?
