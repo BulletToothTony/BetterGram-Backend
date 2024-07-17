@@ -319,7 +319,6 @@ const postUserProfileUpdate = async (req, res, next) => {
 
     const { username, email, password, bio } = req.body;
   console.log(uid);
-  console.log(req.body, '< req body');
 
 
   let uploadResult;

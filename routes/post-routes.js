@@ -7,15 +7,8 @@ const cloudinary = require("../utils/cloudinary");
 const upload = require("../middleware/multer");
 const checkAuth = require("../middleware/check-auth");
 
-router.post("/unlikePost/:postID", postsControllers.postUnlikePost);
 
-router.post("/commentPost/:postID", postsControllers.postComment);
 
-router.post("/post/:uid", upload.single("image"), postsControllers.postStatus); //move this to post routes
-
-router.get("/singlePost/:postID", postsControllers.getSinglePost);
-
-router.delete("/singlePost/:postID", postsControllers.deletePost);
 
 // router.post('/upload', upload.single('image'), postsControllers.testImageUpload)
 router.post("/upload", upload.single("image"), function (req, res) {
@@ -38,7 +31,18 @@ router.post("/upload", upload.single("image"), function (req, res) {
 
 router.use(checkAuth);
 
+router.post("/post/:uid", upload.single('image'), postsControllers.postStatus); //move this to post routes
+
 
 router.post("/likePost/:postID", postsControllers.postLikePost);
+
+router.post("/unlikePost/:postID", postsControllers.postUnlikePost);
+
+router.post("/commentPost/:postID", postsControllers.postComment);
+
+router.get("/singlePost/:postID", postsControllers.getSinglePost);
+
+router.delete("/singlePost/:postID", postsControllers.deletePost);
+
 
 module.exports = router;

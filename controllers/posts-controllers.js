@@ -120,6 +120,13 @@ const postStatus = async (req, res, next) => {
   const { uid } = req.params;
   const { text } = req.body;
   console.log(uid, text);
+  console.log(req, '< req');
+  console.log(req.file, '< req body');
+
+
+  console.log(req.body, '< req body');
+  console.log(req.body, 'req body')
+
 
   const uploadResult = await cloudinary.uploader
     .upload(req.file.path, {
