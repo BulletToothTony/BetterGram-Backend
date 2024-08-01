@@ -14,7 +14,6 @@ const postSchema = new Schema({
     }
   ],
   imageURL: { type: String }
-//   imageURL: { type: String, required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Post", postSchema);
