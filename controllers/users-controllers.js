@@ -76,22 +76,6 @@ const postFollowUser = async (req, res, next) => {
     } catch(err) {
         console.log(err)
     }
-
-    // let doc = await User.findOneAndUpdate({_id: uid}, {followers: [loggedInUser]}, {new: true})
-
-    // res.status(200).json({doc})
-    // let userToBeFollowed;
-    // try {
-    //     userToBeFollowed = await User.find({_id: uid})
-    //     userToBeFollowed.following.push(loggedInUser)
-    //     userToBeFollowed.save()
-    // } catch(err) {
-    //     console.log(err)
-    // }
-
-    // console.log(userToBeFollowed)
-
-    // res.status(200).json({text:'running'})
 }
 
 const postUnfollowUser = async (req, res, next) => {
@@ -133,22 +117,6 @@ const postUnfollowUser = async (req, res, next) => {
     } catch(err) {
         console.log(err)
     }
-
-    // let doc = await User.findOneAndUpdate({_id: uid}, {followers: [loggedInUser]}, {new: true})
-
-    // res.status(200).json({doc})
-    // let userToBeFollowed;
-    // try {
-    //     userToBeFollowed = await User.find({_id: uid})
-    //     userToBeFollowed.following.push(loggedInUser)
-    //     userToBeFollowed.save()
-    // } catch(err) {
-    //     console.log(err)
-    // }
-
-    // console.log(userToBeFollowed)
-
-    // res.status(200).json({text:'running'})
 }
 
 const postStatus = async (req, res, next) => {
@@ -159,11 +127,6 @@ const postStatus = async (req, res, next) => {
 
     // update post of logged in user
     try {
-        // let doc = await User.findOneAndUpdate(
-        //     {_id: uid},
-        //     {$push: {posts: {status: text}}},
-        //     {new: true}
-        // )
 
         const newPost = new Post({
             userID: uid,
@@ -182,7 +145,6 @@ const postStatus = async (req, res, next) => {
     }
 
 
-    // res.status(200).json({text: 'success'})
 }
 
 const getFollowingPosts = async(req, res, next) => {
@@ -226,21 +188,6 @@ const getFollowingPosts = async(req, res, next) => {
       } catch (err) {
         res.status(500).json({ message: 'Fetching posts failed, please try again later.' });
       }
-
-
-
-
-    // try {
-    //     let doc = await User.find({_id: uid})
-
-    //     res.status(200).json({userFollowing: doc[0].following})
-    // } catch(err) {
-    //     console.log(err)
-    // }
-    // get user id of logged in user
-    // get following IDs
-    // populate with posts
-    // get posts from following IDs
 }
 
 const getSingleUserFeed = async (req, res, next) => {
@@ -287,8 +234,6 @@ const getSingleUserFeed = async (req, res, next) => {
       }
 }
 
-
-// user profile
 
 const getUserProfile = async(req, res, next) => {
     console.log('user profile')
@@ -370,13 +315,7 @@ console.log(req.file, 'req.file')
   console.log(updatedUser, 'updateduser');
 
   return res.json({ updatedUser });
-  // const user = usersList.filter((user) => user.id === uid);
 
-  // if (user.length !== 0) {
-  //   user[0].name = name;
-  // } else {
-  //   return res.status(404).json({ error: "ID not found!" });
-  // }
 }
 
 
@@ -510,7 +449,6 @@ exports.signup = signup;
 exports.login = login;
 exports.postFollowUser = postFollowUser;
 exports.postUnfollowUser = postUnfollowUser;
-// exports.postStatus = postStatus;
 exports.getFollowingPosts = getFollowingPosts;
 exports.getUserProfile = getUserProfile;
 exports.getSingleUserFeed = getSingleUserFeed;
