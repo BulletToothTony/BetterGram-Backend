@@ -6,7 +6,6 @@ const upload = require("../middleware/multer");
 
 const router = express.Router();
 
-
 router.get("/feed/:userId", usersControllers.getFollowingPosts);
 router.get("/allusers", usersControllers.getAllUsers);
 router.get("/user/:uid", usersControllers.getUserProfile);
